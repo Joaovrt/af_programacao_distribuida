@@ -29,6 +29,11 @@ class SchoolServiceStub(object):
                 request_serializer=protos_dot_school__pb2.Empty.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.StudentList.FromString,
                 )
+        self.UpdateStudent = channel.unary_unary(
+                '/school.SchoolService/UpdateStudent',
+                request_serializer=protos_dot_school__pb2.Student.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Student.FromString,
+                )
         self.DeleteStudent = channel.unary_unary(
                 '/school.SchoolService/DeleteStudent',
                 request_serializer=protos_dot_school__pb2.Id.SerializeToString,
@@ -39,14 +44,34 @@ class SchoolServiceStub(object):
                 request_serializer=protos_dot_school__pb2.Teacher.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.Teacher.FromString,
                 )
+        self.GetTeacher = channel.unary_unary(
+                '/school.SchoolService/GetTeacher',
+                request_serializer=protos_dot_school__pb2.Id.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Teacher.FromString,
+                )
         self.ListTeachers = channel.unary_unary(
                 '/school.SchoolService/ListTeachers',
                 request_serializer=protos_dot_school__pb2.Empty.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.TeacherList.FromString,
                 )
+        self.UpdateTeacher = channel.unary_unary(
+                '/school.SchoolService/UpdateTeacher',
+                request_serializer=protos_dot_school__pb2.Teacher.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Teacher.FromString,
+                )
+        self.DeleteTeacher = channel.unary_unary(
+                '/school.SchoolService/DeleteTeacher',
+                request_serializer=protos_dot_school__pb2.Id.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Empty.FromString,
+                )
         self.CreateSubject = channel.unary_unary(
                 '/school.SchoolService/CreateSubject',
                 request_serializer=protos_dot_school__pb2.Subject.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Subject.FromString,
+                )
+        self.GetSubject = channel.unary_unary(
+                '/school.SchoolService/GetSubject',
+                request_serializer=protos_dot_school__pb2.Id.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.Subject.FromString,
                 )
         self.ListSubjects = channel.unary_unary(
@@ -54,9 +79,24 @@ class SchoolServiceStub(object):
                 request_serializer=protos_dot_school__pb2.Empty.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.SubjectList.FromString,
                 )
+        self.UpdateSubject = channel.unary_unary(
+                '/school.SchoolService/UpdateSubject',
+                request_serializer=protos_dot_school__pb2.Subject.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Subject.FromString,
+                )
+        self.DeleteSubject = channel.unary_unary(
+                '/school.SchoolService/DeleteSubject',
+                request_serializer=protos_dot_school__pb2.Id.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Empty.FromString,
+                )
         self.CreateClass = channel.unary_unary(
                 '/school.SchoolService/CreateClass',
                 request_serializer=protos_dot_school__pb2.Class.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Class.FromString,
+                )
+        self.GetClass = channel.unary_unary(
+                '/school.SchoolService/GetClass',
+                request_serializer=protos_dot_school__pb2.Id.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.Class.FromString,
                 )
         self.ListClasses = channel.unary_unary(
@@ -64,9 +104,24 @@ class SchoolServiceStub(object):
                 request_serializer=protos_dot_school__pb2.Empty.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.ClassList.FromString,
                 )
+        self.UpdateClass = channel.unary_unary(
+                '/school.SchoolService/UpdateClass',
+                request_serializer=protos_dot_school__pb2.Class.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Class.FromString,
+                )
+        self.DeleteClass = channel.unary_unary(
+                '/school.SchoolService/DeleteClass',
+                request_serializer=protos_dot_school__pb2.Id.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.Empty.FromString,
+                )
         self.GetClassesByTeacher = channel.unary_unary(
                 '/school.SchoolService/GetClassesByTeacher',
                 request_serializer=protos_dot_school__pb2.Teacher.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.ClassList.FromString,
+                )
+        self.GetClassesBySubject = channel.unary_unary(
+                '/school.SchoolService/GetClassesBySubject',
+                request_serializer=protos_dot_school__pb2.Subject.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.ClassList.FromString,
                 )
         self.EnrollStudentInClass = channel.unary_unary(
@@ -98,6 +153,12 @@ class SchoolServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateStudent(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def DeleteStudent(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -111,7 +172,25 @@ class SchoolServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetTeacher(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ListTeachers(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateTeacher(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteTeacher(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -124,7 +203,25 @@ class SchoolServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetSubject(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ListSubjects(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateSubject(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteSubject(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -137,7 +234,25 @@ class SchoolServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetClass(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ListClasses(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateClass(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteClass(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -149,8 +264,14 @@ class SchoolServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetClassesBySubject(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def EnrollStudentInClass(self, request, context):
-        """Enrollment: agora recebe EnrollRequest
+        """Enrollment
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -174,6 +295,11 @@ def add_SchoolServiceServicer_to_server(servicer, server):
                     request_deserializer=protos_dot_school__pb2.Empty.FromString,
                     response_serializer=protos_dot_school__pb2.StudentList.SerializeToString,
             ),
+            'UpdateStudent': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateStudent,
+                    request_deserializer=protos_dot_school__pb2.Student.FromString,
+                    response_serializer=protos_dot_school__pb2.Student.SerializeToString,
+            ),
             'DeleteStudent': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteStudent,
                     request_deserializer=protos_dot_school__pb2.Id.FromString,
@@ -184,14 +310,34 @@ def add_SchoolServiceServicer_to_server(servicer, server):
                     request_deserializer=protos_dot_school__pb2.Teacher.FromString,
                     response_serializer=protos_dot_school__pb2.Teacher.SerializeToString,
             ),
+            'GetTeacher': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetTeacher,
+                    request_deserializer=protos_dot_school__pb2.Id.FromString,
+                    response_serializer=protos_dot_school__pb2.Teacher.SerializeToString,
+            ),
             'ListTeachers': grpc.unary_unary_rpc_method_handler(
                     servicer.ListTeachers,
                     request_deserializer=protos_dot_school__pb2.Empty.FromString,
                     response_serializer=protos_dot_school__pb2.TeacherList.SerializeToString,
             ),
+            'UpdateTeacher': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateTeacher,
+                    request_deserializer=protos_dot_school__pb2.Teacher.FromString,
+                    response_serializer=protos_dot_school__pb2.Teacher.SerializeToString,
+            ),
+            'DeleteTeacher': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteTeacher,
+                    request_deserializer=protos_dot_school__pb2.Id.FromString,
+                    response_serializer=protos_dot_school__pb2.Empty.SerializeToString,
+            ),
             'CreateSubject': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateSubject,
                     request_deserializer=protos_dot_school__pb2.Subject.FromString,
+                    response_serializer=protos_dot_school__pb2.Subject.SerializeToString,
+            ),
+            'GetSubject': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSubject,
+                    request_deserializer=protos_dot_school__pb2.Id.FromString,
                     response_serializer=protos_dot_school__pb2.Subject.SerializeToString,
             ),
             'ListSubjects': grpc.unary_unary_rpc_method_handler(
@@ -199,9 +345,24 @@ def add_SchoolServiceServicer_to_server(servicer, server):
                     request_deserializer=protos_dot_school__pb2.Empty.FromString,
                     response_serializer=protos_dot_school__pb2.SubjectList.SerializeToString,
             ),
+            'UpdateSubject': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateSubject,
+                    request_deserializer=protos_dot_school__pb2.Subject.FromString,
+                    response_serializer=protos_dot_school__pb2.Subject.SerializeToString,
+            ),
+            'DeleteSubject': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteSubject,
+                    request_deserializer=protos_dot_school__pb2.Id.FromString,
+                    response_serializer=protos_dot_school__pb2.Empty.SerializeToString,
+            ),
             'CreateClass': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateClass,
                     request_deserializer=protos_dot_school__pb2.Class.FromString,
+                    response_serializer=protos_dot_school__pb2.Class.SerializeToString,
+            ),
+            'GetClass': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetClass,
+                    request_deserializer=protos_dot_school__pb2.Id.FromString,
                     response_serializer=protos_dot_school__pb2.Class.SerializeToString,
             ),
             'ListClasses': grpc.unary_unary_rpc_method_handler(
@@ -209,9 +370,24 @@ def add_SchoolServiceServicer_to_server(servicer, server):
                     request_deserializer=protos_dot_school__pb2.Empty.FromString,
                     response_serializer=protos_dot_school__pb2.ClassList.SerializeToString,
             ),
+            'UpdateClass': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateClass,
+                    request_deserializer=protos_dot_school__pb2.Class.FromString,
+                    response_serializer=protos_dot_school__pb2.Class.SerializeToString,
+            ),
+            'DeleteClass': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteClass,
+                    request_deserializer=protos_dot_school__pb2.Id.FromString,
+                    response_serializer=protos_dot_school__pb2.Empty.SerializeToString,
+            ),
             'GetClassesByTeacher': grpc.unary_unary_rpc_method_handler(
                     servicer.GetClassesByTeacher,
                     request_deserializer=protos_dot_school__pb2.Teacher.FromString,
+                    response_serializer=protos_dot_school__pb2.ClassList.SerializeToString,
+            ),
+            'GetClassesBySubject': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetClassesBySubject,
+                    request_deserializer=protos_dot_school__pb2.Subject.FromString,
                     response_serializer=protos_dot_school__pb2.ClassList.SerializeToString,
             ),
             'EnrollStudentInClass': grpc.unary_unary_rpc_method_handler(
@@ -281,6 +457,23 @@ class SchoolService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def UpdateStudent(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/UpdateStudent',
+            protos_dot_school__pb2.Student.SerializeToString,
+            protos_dot_school__pb2.Student.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def DeleteStudent(request,
             target,
             options=(),
@@ -315,6 +508,23 @@ class SchoolService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def GetTeacher(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/GetTeacher',
+            protos_dot_school__pb2.Id.SerializeToString,
+            protos_dot_school__pb2.Teacher.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def ListTeachers(request,
             target,
             options=(),
@@ -332,6 +542,40 @@ class SchoolService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def UpdateTeacher(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/UpdateTeacher',
+            protos_dot_school__pb2.Teacher.SerializeToString,
+            protos_dot_school__pb2.Teacher.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteTeacher(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/DeleteTeacher',
+            protos_dot_school__pb2.Id.SerializeToString,
+            protos_dot_school__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def CreateSubject(request,
             target,
             options=(),
@@ -344,6 +588,23 @@ class SchoolService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/school.SchoolService/CreateSubject',
             protos_dot_school__pb2.Subject.SerializeToString,
+            protos_dot_school__pb2.Subject.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetSubject(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/GetSubject',
+            protos_dot_school__pb2.Id.SerializeToString,
             protos_dot_school__pb2.Subject.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -366,6 +627,40 @@ class SchoolService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def UpdateSubject(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/UpdateSubject',
+            protos_dot_school__pb2.Subject.SerializeToString,
+            protos_dot_school__pb2.Subject.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteSubject(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/DeleteSubject',
+            protos_dot_school__pb2.Id.SerializeToString,
+            protos_dot_school__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def CreateClass(request,
             target,
             options=(),
@@ -378,6 +673,23 @@ class SchoolService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/school.SchoolService/CreateClass',
             protos_dot_school__pb2.Class.SerializeToString,
+            protos_dot_school__pb2.Class.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetClass(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/GetClass',
+            protos_dot_school__pb2.Id.SerializeToString,
             protos_dot_school__pb2.Class.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -400,6 +712,40 @@ class SchoolService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def UpdateClass(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/UpdateClass',
+            protos_dot_school__pb2.Class.SerializeToString,
+            protos_dot_school__pb2.Class.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteClass(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/DeleteClass',
+            protos_dot_school__pb2.Id.SerializeToString,
+            protos_dot_school__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def GetClassesByTeacher(request,
             target,
             options=(),
@@ -412,6 +758,23 @@ class SchoolService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/school.SchoolService/GetClassesByTeacher',
             protos_dot_school__pb2.Teacher.SerializeToString,
+            protos_dot_school__pb2.ClassList.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetClassesBySubject(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/GetClassesBySubject',
+            protos_dot_school__pb2.Subject.SerializeToString,
             protos_dot_school__pb2.ClassList.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

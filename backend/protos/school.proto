@@ -45,21 +45,32 @@ service SchoolService {
   rpc CreateStudent(Student) returns (Student);
   rpc GetStudent(Id) returns (Student);
   rpc ListStudents(Empty) returns (StudentList);
+  rpc UpdateStudent(Student) returns (Student);
   rpc DeleteStudent(Id) returns (Empty);
 
   // Teachers
   rpc CreateTeacher(Teacher) returns (Teacher);
+  rpc GetTeacher(Id) returns (Teacher);
   rpc ListTeachers(Empty) returns (TeacherList);
+  rpc UpdateTeacher(Teacher) returns (Teacher);
+  rpc DeleteTeacher(Id) returns (Empty);
 
   // Subjects
   rpc CreateSubject(Subject) returns (Subject);
+  rpc GetSubject(Id) returns (Subject);
   rpc ListSubjects(Empty) returns (SubjectList);
+  rpc UpdateSubject(Subject) returns (Subject);
+  rpc DeleteSubject(Id) returns (Empty);
 
   // Classes
   rpc CreateClass(Class) returns (Class);
+  rpc GetClass(Id) returns (Class);
   rpc ListClasses(Empty) returns (ClassList);
+  rpc UpdateClass(Class) returns (Class);
+  rpc DeleteClass(Id) returns (Empty);
   rpc GetClassesByTeacher(Teacher) returns (ClassList);
+  rpc GetClassesBySubject(Subject) returns (ClassList);
 
-  // Enrollment: agora recebe EnrollRequest
+  // Enrollment
   rpc EnrollStudentInClass(EnrollRequest) returns (Class);
 }
