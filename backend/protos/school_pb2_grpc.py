@@ -89,9 +89,14 @@ class SchoolServiceStub(object):
                 request_serializer=protos_dot_school__pb2.Id.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.Empty.FromString,
                 )
+        self.GetSubjectsByTeacher = channel.unary_unary(
+                '/school.SchoolService/GetSubjectsByTeacher',
+                request_serializer=protos_dot_school__pb2.Id.SerializeToString,
+                response_deserializer=protos_dot_school__pb2.SubjectList.FromString,
+                )
         self.CreateClass = channel.unary_unary(
                 '/school.SchoolService/CreateClass',
-                request_serializer=protos_dot_school__pb2.Class.SerializeToString,
+                request_serializer=protos_dot_school__pb2.CreateClassRequest.SerializeToString,
                 response_deserializer=protos_dot_school__pb2.Class.FromString,
                 )
         self.GetClass = channel.unary_unary(
@@ -227,8 +232,14 @@ class SchoolServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetSubjectsByTeacher(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def CreateClass(self, request, context):
-        """Classes
+        """Classes (turmas) -- note: Class doesn't carry teacher_id; teacher is implicit via Subject.teacher_id
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -259,7 +270,8 @@ class SchoolServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetClassesByTeacher(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Filters
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -355,9 +367,14 @@ def add_SchoolServiceServicer_to_server(servicer, server):
                     request_deserializer=protos_dot_school__pb2.Id.FromString,
                     response_serializer=protos_dot_school__pb2.Empty.SerializeToString,
             ),
+            'GetSubjectsByTeacher': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSubjectsByTeacher,
+                    request_deserializer=protos_dot_school__pb2.Id.FromString,
+                    response_serializer=protos_dot_school__pb2.SubjectList.SerializeToString,
+            ),
             'CreateClass': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateClass,
-                    request_deserializer=protos_dot_school__pb2.Class.FromString,
+                    request_deserializer=protos_dot_school__pb2.CreateClassRequest.FromString,
                     response_serializer=protos_dot_school__pb2.Class.SerializeToString,
             ),
             'GetClass': grpc.unary_unary_rpc_method_handler(
@@ -661,6 +678,23 @@ class SchoolService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def GetSubjectsByTeacher(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/school.SchoolService/GetSubjectsByTeacher',
+            protos_dot_school__pb2.Id.SerializeToString,
+            protos_dot_school__pb2.SubjectList.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def CreateClass(request,
             target,
             options=(),
@@ -672,7 +706,7 @@ class SchoolService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/school.SchoolService/CreateClass',
-            protos_dot_school__pb2.Class.SerializeToString,
+            protos_dot_school__pb2.CreateClassRequest.SerializeToString,
             protos_dot_school__pb2.Class.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -16,14 +16,14 @@ message Teacher {
 message Subject {
   int64 id = 1;
   string name = 2;
+  int64 teacher_id = 3;
 }
 
 message Class {
   int64 id = 1;
-  int64 teacher_id = 2;
-  int64 subject_id = 3;
-  repeated int64 student_ids = 4;
-  string schedule = 5; // exemplo: "Seg 08:00-10:00"
+  int64 subject_id = 2;
+  repeated int64 student_ids = 3;
+  string schedule = 4; // exemplo: "Seg 08:00-10:00"
 }
 
 message Id {
@@ -33,6 +33,12 @@ message Id {
 message EnrollRequest {
   int64 class_id = 1;
   int64 student_id = 2;
+}
+
+message CreateClassRequest {
+  int64 subject_id = 1;
+  string schedule = 2;
+  int64 teacher_id = 3; // usado para autorizar: o professor que tenta criar a turma
 }
 
 message StudentList { repeated Student students = 1; }
@@ -61,13 +67,16 @@ service SchoolService {
   rpc ListSubjects(Empty) returns (SubjectList);
   rpc UpdateSubject(Subject) returns (Subject);
   rpc DeleteSubject(Id) returns (Empty);
+  rpc GetSubjectsByTeacher(Id) returns (SubjectList);
 
-  // Classes
-  rpc CreateClass(Class) returns (Class);
+  // Classes (turmas) -- note: Class doesn't carry teacher_id; teacher is implicit via Subject.teacher_id
+  rpc CreateClass(CreateClassRequest) returns (Class);
   rpc GetClass(Id) returns (Class);
   rpc ListClasses(Empty) returns (ClassList);
   rpc UpdateClass(Class) returns (Class);
   rpc DeleteClass(Id) returns (Empty);
+
+  // Filters
   rpc GetClassesByTeacher(Teacher) returns (ClassList);
   rpc GetClassesBySubject(Subject) returns (ClassList);
 

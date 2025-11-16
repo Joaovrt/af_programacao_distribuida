@@ -1,7 +1,8 @@
 from models import Student, Teacher, Subject, Class
 from db import SessionLocal
+from sqlalchemy.orm import joinedload
 
-# --- Students ---
+# ---------- Students ----------
 def create_student(name: str):
     db = SessionLocal()
     s = Student(name=name)
@@ -13,7 +14,7 @@ def create_student(name: str):
 
 def get_student(student_id: int):
     db = SessionLocal()
-    s = db.get(Student, student_id)
+    s = db.query(Student).get(student_id)
     db.close()
     return s
 
@@ -25,7 +26,7 @@ def list_students():
 
 def update_student(student_id: int, name: str):
     db = SessionLocal()
-    s = db.get(Student, student_id)
+    s = db.query(Student).get(student_id)
     if not s:
         db.close()
         return None
@@ -38,7 +39,7 @@ def update_student(student_id: int, name: str):
 
 def delete_student(student_id: int):
     db = SessionLocal()
-    s = db.get(Student, student_id)
+    s = db.query(Student).get(student_id)
     if not s:
         db.close()
         return False
@@ -47,7 +48,7 @@ def delete_student(student_id: int):
     db.close()
     return True
 
-# --- Teachers ---
+# ---------- Teachers ----------
 def create_teacher(name: str):
     db = SessionLocal()
     t = Teacher(name=name)
@@ -59,7 +60,7 @@ def create_teacher(name: str):
 
 def get_teacher(teacher_id: int):
     db = SessionLocal()
-    t = db.get(Teacher, teacher_id)
+    t = db.query(Teacher).get(teacher_id)
     db.close()
     return t
 
@@ -71,7 +72,7 @@ def list_teachers():
 
 def update_teacher(teacher_id: int, name: str):
     db = SessionLocal()
-    t = db.get(Teacher, teacher_id)
+    t = db.query(Teacher).get(teacher_id)
     if not t:
         db.close()
         return None
@@ -84,7 +85,7 @@ def update_teacher(teacher_id: int, name: str):
 
 def delete_teacher(teacher_id: int):
     db = SessionLocal()
-    t = db.get(Teacher, teacher_id)
+    t = db.query(Teacher).get(teacher_id)
     if not t:
         db.close()
         return False
@@ -93,10 +94,15 @@ def delete_teacher(teacher_id: int):
     db.close()
     return True
 
-# --- Subjects ---
-def create_subject(name: str):
+# ---------- Subjects ----------
+def create_subject(name: str, teacher_id: int):
     db = SessionLocal()
-    sub = Subject(name=name)
+    # validar existência do teacher
+    teacher = db.query(Teacher).get(teacher_id)
+    if not teacher:
+        db.close()
+        return None
+    sub = Subject(name=name, teacher_id=teacher_id)
     db.add(sub)
     db.commit()
     db.refresh(sub)
@@ -105,23 +111,31 @@ def create_subject(name: str):
 
 def get_subject(subject_id: int):
     db = SessionLocal()
-    sub = db.get(Subject, subject_id)
+    sub = db.query(Subject).get(subject_id)
     db.close()
     return sub
 
 def list_subjects():
     db = SessionLocal()
-    res = db.query(Subject).all()
+    res = db.query(Subject).options(joinedload(Subject.teacher)).all()
     db.close()
     return res
 
-def update_subject(subject_id: int, name: str):
+def update_subject(subject_id: int, name: str = None, teacher_id: int = None):
     db = SessionLocal()
-    sub = db.get(Subject, subject_id)
+    sub = db.query(Subject).get(subject_id)
     if not sub:
         db.close()
         return None
-    sub.name = name
+    if name is not None:
+        sub.name = name
+    if teacher_id is not None:
+        # validar teacher existe
+        teacher = db.query(Teacher).get(teacher_id)
+        if not teacher:
+            db.close()
+            return None
+        sub.teacher_id = teacher_id
     db.add(sub)
     db.commit()
     db.refresh(sub)
@@ -130,7 +144,7 @@ def update_subject(subject_id: int, name: str):
 
 def delete_subject(subject_id: int):
     db = SessionLocal()
-    sub = db.get(Subject, subject_id)
+    sub = db.query(Subject).get(subject_id)
     if not sub:
         db.close()
         return False
@@ -139,10 +153,20 @@ def delete_subject(subject_id: int):
     db.close()
     return True
 
-# --- Classes ---
-def create_class(teacher_id: int, subject_id: int, schedule: str):
+# ---------- Classes ----------
+def create_class(subject_id: int, schedule: str, teacher_id: int = None):
+    """
+    teacher_id: usado para autorizar que o professor que está criando a turma é o dono da matéria.
+    """
     db = SessionLocal()
-    c = Class(teacher_id=teacher_id, subject_id=subject_id, schedule=schedule)
+    sub = db.query(Subject).get(subject_id)
+    if not sub:
+        db.close()
+        return None  # subject não existe
+    if teacher_id is not None and sub.teacher_id != teacher_id:
+        db.close()
+        return None  # não autorizado
+    c = Class(subject_id=subject_id, schedule=schedule)
     db.add(c)
     db.commit()
     db.refresh(c)
@@ -151,25 +175,27 @@ def create_class(teacher_id: int, subject_id: int, schedule: str):
 
 def get_class(class_id: int):
     db = SessionLocal()
-    c = db.get(Class, class_id)
+    c = db.query(Class).options(joinedload(Class.subject), joinedload(Class.students)).get(class_id)
     db.close()
     return c
 
 def list_classes():
     db = SessionLocal()
-    res = db.query(Class).all()
+    res = db.query(Class).options(joinedload(Class.subject), joinedload(Class.students)).all()
     db.close()
     return res
 
-def update_class(class_id: int, teacher_id: int = None, subject_id: int = None, schedule: str = None):
+def update_class(class_id: int, subject_id: int = None, schedule: str = None):
     db = SessionLocal()
-    c = db.get(Class, class_id)
+    c = db.query(Class).get(class_id)
     if not c:
         db.close()
         return None
-    if teacher_id is not None:
-        c.teacher_id = teacher_id
     if subject_id is not None:
+        sub = db.query(Subject).get(subject_id)
+        if not sub:
+            db.close()
+            return None
         c.subject_id = subject_id
     if schedule is not None:
         c.schedule = schedule
@@ -181,7 +207,7 @@ def update_class(class_id: int, teacher_id: int = None, subject_id: int = None, 
 
 def delete_class(class_id: int):
     db = SessionLocal()
-    c = db.get(Class, class_id)
+    c = db.query(Class).get(class_id)
     if not c:
         db.close()
         return False
@@ -192,25 +218,25 @@ def delete_class(class_id: int):
 
 def get_classes_by_teacher(teacher_id: int):
     db = SessionLocal()
-    res = db.query(Class).filter(Class.teacher_id == teacher_id).all()
+    # todas as classes cujas subjects têm teacher_id == teacher_id
+    res = db.query(Class).join(Subject).filter(Subject.teacher_id == teacher_id).options(joinedload(Class.subject), joinedload(Class.students)).all()
     db.close()
     return res
 
 def get_classes_by_subject(subject_id: int):
     db = SessionLocal()
-    res = db.query(Class).filter(Class.subject_id == subject_id).all()
+    res = db.query(Class).filter(Class.subject_id == subject_id).options(joinedload(Class.subject), joinedload(Class.students)).all()
     db.close()
     return res
 
-# --- Enrollment ---
+# ---------- Enrollment ----------
 def enroll_student_in_class(class_id: int, student_id: int):
     db = SessionLocal()
-    c = db.get(Class, class_id)
-    s = db.get(Student, student_id)
+    c = db.query(Class).get(class_id)
+    s = db.query(Student).get(student_id)
     if c is None or s is None:
         db.close()
         return None
-    # evita duplicata
     if s not in c.students:
         c.students.append(s)
         db.commit()

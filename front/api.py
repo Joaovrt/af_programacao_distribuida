@@ -13,7 +13,7 @@ def grpc_channel():
     channel = grpc.insecure_channel("localhost:50051")
     return school_pb2_grpc.SchoolServiceStub(channel)
 
-# --- STUDENTS ---
+# ---------- STUDENTS ----------
 @app.route("/students", methods=["POST"])
 def create_student():
     data = request.get_json()
@@ -36,24 +36,12 @@ def get_student(student_id):
     res = stub.GetStudent(school_pb2.Id(id=student_id))
     return jsonify({"id": res.id, "name": res.name})
 
-@app.route("/students/<int:student_id>", methods=["PUT"])
-def update_student(student_id):
-    data = request.get_json()
-    stub = grpc_channel()
-    req = school_pb2.Student(id=student_id, name=data.get("name", ""))
-    res = stub.UpdateStudent(req)
-    return jsonify({"id": res.id, "name": res.name})
-
-@app.route("/students/<int:student_id>", methods=["DELETE"])
-def delete_student(student_id):
-    stub = grpc_channel()
-    stub.DeleteStudent(school_pb2.Id(id=student_id))
-    return "", 204
-
-# --- TEACHERS ---
+# ---------- TEACHERS ----------
 @app.route("/teachers", methods=["POST"])
 def create_teacher():
     data = request.get_json()
+    if not data or "name" not in data:
+        abort(400)
     stub = grpc_channel()
     req = school_pb2.Teacher(name=data["name"])
     res = stub.CreateTeacher(req)
@@ -65,75 +53,44 @@ def list_teachers():
     res = stub.ListTeachers(school_pb2.Empty())
     return jsonify([{"id": t.id, "name": t.name} for t in res.teachers])
 
-@app.route("/teachers/<int:teacher_id>", methods=["GET"])
-def get_teacher(teacher_id):
-    stub = grpc_channel()
-    res = stub.GetTeacher(school_pb2.Id(id=teacher_id))
-    return jsonify({"id": res.id, "name": res.name})
-
-@app.route("/teachers/<int:teacher_id>", methods=["PUT"])
-def update_teacher(teacher_id):
-    data = request.get_json()
-    stub = grpc_channel()
-    req = school_pb2.Teacher(id=teacher_id, name=data.get("name", ""))
-    res = stub.UpdateTeacher(req)
-    return jsonify({"id": res.id, "name": res.name})
-
-@app.route("/teachers/<int:teacher_id>", methods=["DELETE"])
-def delete_teacher(teacher_id):
-    stub = grpc_channel()
-    stub.DeleteTeacher(school_pb2.Id(id=teacher_id))
-    return "", 204
-
-# --- SUBJECTS ---
+# ---------- SUBJECTS ----------
 @app.route("/subjects", methods=["POST"])
 def create_subject():
     data = request.get_json()
+    if not data or "name" not in data or "teacher_id" not in data:
+        abort(400, "name and teacher_id required")
     stub = grpc_channel()
-    req = school_pb2.Subject(name=data["name"])
-    res = stub.CreateSubject(req)
-    return jsonify({"id": res.id, "name": res.name}), 201
+    req = school_pb2.Subject(name=data["name"], teacher_id=data["teacher_id"])
+    try:
+        res = stub.CreateSubject(req)
+    except grpc.RpcError as e:
+        abort(400, e.details())
+    return jsonify({"id": res.id, "name": res.name, "teacher_id": res.teacher_id}), 201
 
 @app.route("/subjects", methods=["GET"])
 def list_subjects():
     stub = grpc_channel()
     res = stub.ListSubjects(school_pb2.Empty())
-    return jsonify([{"id": s.id, "name": s.name} for s in res.subjects])
+    return jsonify([{"id": s.id, "name": s.name, "teacher_id": s.teacher_id} for s in res.subjects])
 
-@app.route("/subjects/<int:subject_id>", methods=["GET"])
-def get_subject(subject_id):
-    stub = grpc_channel()
-    res = stub.GetSubject(school_pb2.Id(id=subject_id))
-    return jsonify({"id": res.id, "name": res.name})
-
-@app.route("/subjects/<int:subject_id>", methods=["PUT"])
-def update_subject(subject_id):
-    data = request.get_json()
-    stub = grpc_channel()
-    req = school_pb2.Subject(id=subject_id, name=data.get("name", ""))
-    res = stub.UpdateSubject(req)
-    return jsonify({"id": res.id, "name": res.name})
-
-@app.route("/subjects/<int:subject_id>", methods=["DELETE"])
-def delete_subject(subject_id):
-    stub = grpc_channel()
-    stub.DeleteSubject(school_pb2.Id(id=subject_id))
-    return "", 204
-
-# --- CLASSES ---
+# ---------- CLASSES ----------
 @app.route("/classes", methods=["POST"])
 def create_class():
+    """
+    Para criar uma turma, o professor que está criando deve enviar teacher_id para autorização.
+    Body: { "subject_id": int, "schedule": str, "teacher_id": int }
+    """
     data = request.get_json()
+    if not data or "subject_id" not in data or "teacher_id" not in data:
+        abort(400, "subject_id and teacher_id required")
     stub = grpc_channel()
-    req = school_pb2.Class(
-        teacher_id=data["teacher_id"],
-        subject_id=data["subject_id"],
-        schedule=data.get("schedule", "")
-    )
-    res = stub.CreateClass(req)
+    req = school_pb2.CreateClassRequest(subject_id=data["subject_id"], schedule=data.get("schedule", ""), teacher_id=data["teacher_id"])
+    try:
+        res = stub.CreateClass(req)
+    except grpc.RpcError as e:
+        abort(400, e.details())
     return jsonify({
         "id": res.id,
-        "teacher_id": res.teacher_id,
         "subject_id": res.subject_id,
         "schedule": res.schedule,
         "student_ids": list(res.student_ids)
@@ -147,7 +104,6 @@ def list_classes():
     for c in res.classes:
         classes.append({
             "id": c.id,
-            "teacher_id": c.teacher_id,
             "subject_id": c.subject_id,
             "student_ids": list(c.student_ids),
             "schedule": c.schedule,
@@ -160,38 +116,12 @@ def get_class(class_id):
     res = stub.GetClass(school_pb2.Id(id=class_id))
     return jsonify({
         "id": res.id,
-        "teacher_id": res.teacher_id,
         "subject_id": res.subject_id,
         "student_ids": list(res.student_ids),
         "schedule": res.schedule,
     })
 
-@app.route("/classes/<int:class_id>", methods=["PUT"])
-def update_class(class_id):
-    data = request.get_json()
-    stub = grpc_channel()
-    req = school_pb2.Class(
-        id=class_id,
-        teacher_id=data.get("teacher_id", 0),
-        subject_id=data.get("subject_id", 0),
-        schedule=data.get("schedule", "")
-    )
-    res = stub.UpdateClass(req)
-    return jsonify({
-        "id": res.id,
-        "teacher_id": res.teacher_id,
-        "subject_id": res.subject_id,
-        "student_ids": list(res.student_ids),
-        "schedule": res.schedule,
-    })
-
-@app.route("/classes/<int:class_id>", methods=["DELETE"])
-def delete_class(class_id):
-    stub = grpc_channel()
-    stub.DeleteClass(school_pb2.Id(id=class_id))
-    return "", 204
-
-# --- filters: teacher & subject ---
+# professor vê turmas das suas matérias
 @app.route("/teachers/<int:teacher_id>/classes", methods=["GET"])
 def get_classes_by_teacher_route(teacher_id):
     stub = grpc_channel()
@@ -200,13 +130,13 @@ def get_classes_by_teacher_route(teacher_id):
     for c in res.classes:
         classes.append({
             "id": c.id,
-            "teacher_id": c.teacher_id,
             "subject_id": c.subject_id,
             "student_ids": list(c.student_ids),
             "schedule": c.schedule,
         })
     return jsonify(classes)
 
+# listar turmas por matéria
 @app.route("/subjects/<int:subject_id>/classes", methods=["GET"])
 def get_classes_by_subject_route(subject_id):
     stub = grpc_channel()
@@ -215,24 +145,37 @@ def get_classes_by_subject_route(subject_id):
     for c in res.classes:
         classes.append({
             "id": c.id,
-            "teacher_id": c.teacher_id,
             "subject_id": c.subject_id,
             "student_ids": list(c.student_ids),
             "schedule": c.schedule,
         })
     return jsonify(classes)
 
-# --- ENROLL ---
+# aluno se inscreve em turma
 @app.route("/classes/<int:class_id>/enroll", methods=["POST"])
 def enroll(class_id):
     data = request.get_json()
+    if not data or "student_id" not in data:
+        abort(400, "student_id required")
     stub = grpc_channel()
     req = school_pb2.EnrollRequest(class_id=class_id, student_id=data["student_id"])
-    res = stub.EnrollStudentInClass(req)
+    try:
+        res = stub.EnrollStudentInClass(req)
+    except grpc.RpcError as e:
+        abort(400, e.details())
     return jsonify({
         "id": res.id,
         "student_ids": list(res.student_ids)
     }), 200
+
+@app.route("/teachers/<int:teacher_id>/subjects", methods=["GET"])
+def get_subjects_by_teacher(teacher_id):
+    stub = grpc_channel()
+    req = school_pb2.Id(id=teacher_id)
+    res = stub.GetSubjectsByTeacher(req)
+
+    subjects = [{"id": s.id, "name": s.name, "teacher_id": s.teacher_id} for s in res.subjects]
+    return jsonify(subjects), 200
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

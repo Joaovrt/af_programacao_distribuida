@@ -22,7 +22,7 @@ class SchoolServicer(school_pb2_grpc.SchoolServiceServicer):
     def GetStudent(self, request, context):
         s = get_student(request.id)
         if not s:
-            return school_pb2.Student()  # vazio
+            return school_pb2.Student()
         return school_pb2.Student(id=s.id, name=s.name)
 
     def ListStudents(self, request, context):
@@ -70,26 +70,29 @@ class SchoolServicer(school_pb2_grpc.SchoolServiceServicer):
 
     # Subjects
     def CreateSubject(self, request, context):
-        sub = create_subject(request.name)
-        return school_pb2.Subject(id=sub.id, name=sub.name)
+        sub = create_subject(request.name, request.teacher_id)
+        if not sub:
+            # subject creation failed (teacher não existe)
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "teacher not found")
+        return school_pb2.Subject(id=sub.id, name=sub.name, teacher_id=sub.teacher_id)
 
     def GetSubject(self, request, context):
         sub = get_subject(request.id)
         if not sub:
             return school_pb2.Subject()
-        return school_pb2.Subject(id=sub.id, name=sub.name)
+        return school_pb2.Subject(id=sub.id, name=sub.name, teacher_id=sub.teacher_id)
 
     def ListSubjects(self, request, context):
         rows = list_subjects()
         return school_pb2.SubjectList(
-            subjects=[school_pb2.Subject(id=r.id, name=r.name) for r in rows]
+            subjects=[school_pb2.Subject(id=r.id, name=r.name, teacher_id=r.teacher_id) for r in rows]
         )
 
     def UpdateSubject(self, request, context):
-        sub = update_subject(request.id, request.name)
+        sub = update_subject(request.id, request.name, request.teacher_id)
         if not sub:
-            return school_pb2.Subject()
-        return school_pb2.Subject(id=sub.id, name=sub.name)
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "subject or teacher not found")
+        return school_pb2.Subject(id=sub.id, name=sub.name, teacher_id=sub.teacher_id)
 
     def DeleteSubject(self, request, context):
         delete_subject(request.id)
@@ -97,10 +100,11 @@ class SchoolServicer(school_pb2_grpc.SchoolServiceServicer):
 
     # Classes
     def CreateClass(self, request, context):
-        c = create_class(request.teacher_id, request.subject_id, request.schedule)
+        c = create_class(request.subject_id, request.schedule, request.teacher_id)
+        if not c:
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "subject not found or teacher not authorized")
         return school_pb2.Class(
             id=c.id,
-            teacher_id=c.teacher_id,
             subject_id=c.subject_id,
             schedule=c.schedule,
             student_ids=[s.id for s in c.students]
@@ -112,7 +116,6 @@ class SchoolServicer(school_pb2_grpc.SchoolServiceServicer):
             return school_pb2.Class()
         return school_pb2.Class(
             id=c.id,
-            teacher_id=c.teacher_id,
             subject_id=c.subject_id,
             schedule=c.schedule,
             student_ids=[s.id for s in c.students]
@@ -120,26 +123,22 @@ class SchoolServicer(school_pb2_grpc.SchoolServiceServicer):
 
     def ListClasses(self, request, context):
         rows = list_classes()
-        pb_classes = []
+        pb = []
         for r in rows:
-            pb_classes.append(
-                school_pb2.Class(
-                    id=r.id,
-                    teacher_id=r.teacher_id,
-                    subject_id=r.subject_id,
-                    schedule=r.schedule,
-                    student_ids=[s.id for s in r.students]
-                )
-            )
-        return school_pb2.ClassList(classes=pb_classes)
+            pb.append(school_pb2.Class(
+                id=r.id,
+                subject_id=r.subject_id,
+                schedule=r.schedule,
+                student_ids=[s.id for s in r.students]
+            ))
+        return school_pb2.ClassList(classes=pb)
 
     def UpdateClass(self, request, context):
-        c = update_class(request.id, request.teacher_id, request.subject_id, request.schedule)
+        c = update_class(request.id, request.subject_id, request.schedule)
         if not c:
-            return school_pb2.Class()
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "class or subject not found")
         return school_pb2.Class(
             id=c.id,
-            teacher_id=c.teacher_id,
             subject_id=c.subject_id,
             schedule=c.schedule,
             student_ids=[s.id for s in c.students]
@@ -151,45 +150,55 @@ class SchoolServicer(school_pb2_grpc.SchoolServiceServicer):
 
     def GetClassesByTeacher(self, request, context):
         rows = get_classes_by_teacher(request.id)
-        pb_classes = []
+        pb = []
         for r in rows:
-            pb_classes.append(
-                school_pb2.Class(
-                    id=r.id,
-                    teacher_id=r.teacher_id,
-                    subject_id=r.subject_id,
-                    schedule=r.schedule,
-                    student_ids=[s.id for s in r.students]
-                )
-            )
-        return school_pb2.ClassList(classes=pb_classes)
+            pb.append(school_pb2.Class(
+                id=r.id,
+                subject_id=r.subject_id,
+                schedule=r.schedule,
+                student_ids=[s.id for s in r.students]
+            ))
+        return school_pb2.ClassList(classes=pb)
 
     def GetClassesBySubject(self, request, context):
         rows = get_classes_by_subject(request.id)
-        pb_classes = []
+        pb = []
         for r in rows:
-            pb_classes.append(
-                school_pb2.Class(
-                    id=r.id,
-                    teacher_id=r.teacher_id,
-                    subject_id=r.subject_id,
-                    schedule=r.schedule,
-                    student_ids=[s.id for s in r.students]
-                )
-            )
-        return school_pb2.ClassList(classes=pb_classes)
+            pb.append(school_pb2.Class(
+                id=r.id,
+                subject_id=r.subject_id,
+                schedule=r.schedule,
+                student_ids=[s.id for s in r.students]
+            ))
+        return school_pb2.ClassList(classes=pb)
 
     # Enrollment
     def EnrollStudentInClass(self, request, context):
         c = enroll_student_in_class(request.class_id, request.student_id)
         if not c:
-            return school_pb2.Class()
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "class or student not found")
         return school_pb2.Class(
             id=c.id,
-            teacher_id=c.teacher_id,
             subject_id=c.subject_id,
             schedule=c.schedule,
             student_ids=[s.id for s in c.students]
+        )
+
+    def GetSubjectsByTeacher(self, request, context):
+        # Usa list_subjects() do crud e filtra por teacher_id
+        teacher_id = request.id
+        rows = list_subjects()  # retorna objetos Subject do SQLAlchemy
+        filtered = [s for s in rows if s.teacher_id == teacher_id]
+
+        return school_pb2.SubjectList(
+            subjects=[
+                school_pb2.Subject(
+                    id=s.id,
+                    name=s.name,
+                    teacher_id=s.teacher_id,
+                )
+                for s in filtered
+            ]
         )
 
 
